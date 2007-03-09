@@ -1,0 +1,12 @@
+benchmark/ben1.pl
+Changes
+lib/Algorithm/RectanglesContainingDot_XS.pm
+Makefile.PL
+MANIFEST
+ppport.h
+README
+RectanglesContainingDot_XS.xs
+t/Algorithm-RectanglesContainingDot_XS.t
+t/pods.t
+typemap
+META.yml                                 Module meta-data (added by MakeMaker)
