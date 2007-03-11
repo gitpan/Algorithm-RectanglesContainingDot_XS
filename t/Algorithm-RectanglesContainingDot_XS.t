@@ -8,13 +8,16 @@ BEGIN { use_ok('Algorithm::RectanglesContainingDot_XS') };
 BEGIN { use_ok('Algorithm::RectanglesContainingDot') };
 
 my $a = Algorithm::RectanglesContainingDot_XS->new;
-my $r = Algorithm::RectanglesContainingDot->new;
+my $r = Algorithm::RectanglesContainingDot::Perl->new;
 
 my $nr = 100000;
 my $np = 20000;
 
 my $d = 10000;
 my $dd = 200;
+
+# use Devel::Peek;
+# Dump($a);
 
 for (0..($nr-1)) {
     my $x0 = int(rand $d);

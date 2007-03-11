@@ -6,6 +6,7 @@ MANIFEST
 ppport.h
 README
 RectanglesContainingDot_XS.xs
+sort.h
 t/Algorithm-RectanglesContainingDot_XS.t
 t/pods.t
 typemap

@@ -6,6 +6,10 @@
 #include "perl.h"
 #include "XSUB.h"
 
+#if (PERL_VERSION < 7)
+#include "sort.h"
+#endif
+
 #include "ppport.h"
 
 
@@ -16,8 +20,13 @@ _obj2sv(pTHX_ void *ptr, SV * klass, char * ctype) {
 	SV *sv = newSVpvf("%s(0x%x)", ctype, ptr);
 	SV *mgobj = sv_2mortal(newSViv(PTR2IV(ptr)));
 	SvREADONLY_on(mgobj);
-	sv_magic(sv, mgobj, '~', ctype, 0);
-	/* SvREADONLY_on(sv); */
+
+#if (PERL_VERSION < 7)
+        sv_magic(sv, mgobj, '~', ctype, strlen(ctype));
+#else
+        sv_magic(sv, mgobj, '~', ctype, 0);
+#endif
+
 	rv = newRV_noinc(sv);
 	if (SvOK(klass)) {
 	    HV *stash;
@@ -36,19 +45,13 @@ _obj2sv(pTHX_ void *ptr, SV * klass, char * ctype) {
 static void *
 _sv2obj(pTHX_ SV* self, char * ctype, int required) {
     SV *sv = SvRV(self);
-    if (sv) {
-        if (SvTYPE(sv) == SVt_PVMG) {
-            MAGIC *mg = mg_find(sv, '~');
-            if (mg) {
-                if (strcmp(ctype, mg->mg_ptr) == 0 && mg->mg_obj) {
-                    return INT2PTR(void *, SvIV(mg->mg_obj));
-                }
-            }
-        }
+    if (sv && (SvTYPE(sv) == SVt_PVMG)) {
+        MAGIC *mg = mg_find(sv, '~');
+        if (mg && (strcmp(ctype, mg->mg_ptr) == 0 && mg->mg_obj))
+            return INT2PTR(void *, SvIV(mg->mg_obj));
     }
-    if (required) {
+    if (required)
         Perl_croak(aTHX_ "object of class %s expected", ctype);
-    }
     return NULL;
 }
 
@@ -102,7 +105,7 @@ my_malloc(int count, int size) {
 
 #endif
 
-#define MIN_DIVISION 16
+#define MIN_DIVISION 8
 #define RECTANGLES_CHUNK_SIZE 8191
 
 struct rectangle {
